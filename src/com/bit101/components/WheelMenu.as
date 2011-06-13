@@ -128,6 +128,7 @@ package com.bit101.components
 			}
 			parent.removeChild(this);
 			removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+			dispatchEvent(new Event(Event.CLOSE));
 		}
 		
 		/**

@@ -69,6 +69,7 @@ package com.bit101.components
 			_iconRadius = iconRadius;
 			_innerRadius = innerRadius;
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			visible = false;
 			super(parent);
 			
 			if(defaultHandler != null)
@@ -104,6 +105,7 @@ package com.bit101.components
 				var btn:ArcButton = new ArcButton(Math.PI * 2 / _numButtons, _outerRadius, _iconRadius, _innerRadius);
 				btn.id = i;
 				btn.rotation = _startingAngle + 360 / _numButtons * i;
+				btn.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 				btn.addEventListener(Event.SELECT, onSelect);
 				addChild(btn);
 				_buttons.push(btn);
@@ -122,8 +124,10 @@ package com.bit101.components
 			visible = false;
 			if(stage != null)
 			{
-				stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+				stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp, true);
 			}
+			parent.removeChild(this);
+			removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
 		
 		/**
@@ -160,7 +164,7 @@ package com.bit101.components
 		 */
 		protected function onAddedToStage(event:Event):void
 		{
-			hide();
+			//hide();
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
 		
@@ -173,6 +177,17 @@ package com.bit101.components
 			removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
 		
+		/**
+		 * Called when one of the buttons is selected. Sets selected index and dispatches select event.
+		 */
+		protected function onMouseOver(event:MouseEvent):void
+		{
+			if(event.relatedObject is ArcButton) {
+				_selectedIndex = (event.relatedObject as ArcButton).id;
+			}
+			//trace(event.target);
+			//dispatchEvent(new Event(Event.SELECT));
+		}
 		/**
 		 * Called when one of the buttons is selected. Sets selected index and dispatches select event.
 		 */
@@ -255,7 +270,7 @@ package com.bit101.components
 		 */
 		public function get selectedItem():Object
 		{
-			return _items[_selectedIndex];
+			return _selectedIndex == -1 ? null : _items[_selectedIndex];
 		}
 		
 	
@@ -282,7 +297,7 @@ class ArcButton extends Sprite
 	protected var _bg:Shape;
 	protected var _borderColor:uint = 0xcccccc;
 	protected var _color:uint = 0xffffff;
-	protected var _highlightColor:uint = 0xeeeeee;
+	protected var _highlightColor:uint = 0xFF6600;
 	protected var _icon:DisplayObject;
 	protected var _iconHolder:Sprite;
 	protected var _iconRadius:Number;
